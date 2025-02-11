@@ -1,0 +1,8 @@
+.legend {
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+.legendItemName {
+  font-size: 12px !important;
+}

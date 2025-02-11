@@ -1,3 +1,6 @@
+/* 👇 Make sure the styles are applied in the correct order */
+@layer mantine, mantine-datatable;
+
 .page {
   --gray-rgb: 0, 0, 0;
   --gray-alpha-200: rgba(var(--gray-rgb), 0.08);

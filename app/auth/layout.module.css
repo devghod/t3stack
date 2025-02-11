@@ -1,0 +1,6 @@
+.layout {
+  justify-items: center;
+  align-content: center;
+  min-height: 100svh;
+  background-color: royalblue;
+}
