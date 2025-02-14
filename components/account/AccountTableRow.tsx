@@ -1,6 +1,5 @@
 import { Badge, Button, Group, Table, Text } from "@mantine/core";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import { memo } from "react";
 import { TUser } from "@/types/user";
 import { UserRole } from "@prisma/client";
 import Image from "next/image";
@@ -45,7 +44,7 @@ function AccountTableRow({
   );
 }
 
-export default memo(AccountTableRow);
+export default AccountTableRow;
 
 const roleBadge = (role: UserRole) =>  (
   <Badge 

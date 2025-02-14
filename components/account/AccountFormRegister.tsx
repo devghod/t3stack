@@ -3,20 +3,22 @@ import { useUserStore } from "@/stores/userStore";
 import { TextInput, PasswordInput, Space, Grid, Group, Button, Select } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { yupResolver } from "mantine-form-yup-resolver";
-import { memo, useState } from "react";
+import { useState } from "react";
 import { UserRole } from "@prisma/client";
 import { timezones } from "@/constant/timezones";
+import { notifications } from '@mantine/notifications';
+
 import FormError from "../FormError";
 import FormSuccess from "../FormSuccess";
 
-export default memo(function RegisterForm({ 
+export default function RegisterForm({ 
   loadingUser, 
   onClose 
 }: {
   loadingUser: boolean;
   onClose: () => void;
 }) {
-  const { createUserGraphql, errorGraphql } = useUserStore();
+  const { createUserGraphql } = useUserStore();
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -65,8 +67,13 @@ export default memo(function RegisterForm({
       } else if (response.message) {
         setErrorMsg(response.message);
       }
+      notifications.show({
+        title: response.success ? 'Success' : 'Fail',
+        message: response.message,
+        color: response.success ? 'green' : 'red',
+      });
     } catch (error) { // eslint-disable-line
-      setErrorMsg(errorGraphql || 'Registration failed');
+      setErrorMsg('Registration failed');
     }
     resetMsg();
   };
@@ -156,4 +163,4 @@ export default memo(function RegisterForm({
       </form>
     </>
   );
-});
+}

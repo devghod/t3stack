@@ -3,8 +3,8 @@ import { Tprofile, Tregister } from '@/types/auth';
 import { TUser } from '@/types/user';
 import { gql } from '@apollo/client';
 import { TReport } from '@/types/report';
+
 import client from '@/lib/apollo-client';
-import bcrypt from 'bcryptjs';
 
 type UserStore = {
   users: TUser[];
@@ -38,9 +38,11 @@ type UserStore = {
   createUser: (data: Tregister) => Promise<void>;
   createUserGraphql: (data: Tregister) => Promise<{ message: string; success: boolean }>;
   updateUser: (data: Tprofile, userId: string) => Promise<void>;
+  updateUserGraphql: (data: Tprofile, userId: string) => Promise<void>;
   deleteUser: (userId: string) => Promise<void>;
+  deleteUserGraphql: (userId: string) => Promise<void>;
   setPage: (page: number) => void;
-  setGraphqlError: (error: string) => void;
+  setPageLimit: (page: number, limit: number) => void;
 }
 
 const createUserActions: StateCreator<UserStore> = (set, get) => ({
@@ -68,16 +70,77 @@ const createUserActions: StateCreator<UserStore> = (set, get) => ({
   },
 
   // Graphql Start
-  setGraphqlError: (error: string) => {
-    set({ errorGraphql: error, loadingUser: false });
+  updateUserGraphql: async (data: Tprofile, userId: string) => {
+    set({ loadingUser: true, error: null });
+    const { data: response } = await client.mutate({
+      mutation: gql`
+        mutation UpdateUser($updateUserId: ID!, $edit: EditUserInput!) {
+          updateUser(id: $updateUserId, edit: $edit) {
+            message
+            success
+            user {
+              email
+              name
+              role
+              timezone
+            }
+          }
+        }
+      `,
+      variables: { 
+        updateUserId: userId,
+        edit: { ...data }
+      },
+    });
+    const result = await response.updateUser;
+
+    if (result.success) {
+      set({ 
+        loadingUser: false, 
+        users: get().users.map(user => 
+          user.id === userId 
+          ? { ...user, ...result.user } 
+          : user
+        )
+      });
+    }
+
+    return result;
+  },
+
+  deleteUserGraphql: async (
+    userId: string, 
+  ) => {
+    set({ loadingUser: true, error: null });
+    const { data: response } = await client.mutate({
+      mutation: gql`
+        mutation DeleteUser($deleteUserId: ID!) {
+          deleteUser(id: $deleteUserId) {
+            message
+            success
+          }
+        }
+      `,
+      variables: { deleteUserId: userId }
+    });
+    const result = response.deleteUser;
+
+    set({ loadingUser: false, error: null });
+
+    if (result.success) {
+      get().getUsersPaginationGraphql(
+        get().pagination.page, 
+        get().pagination.limit
+      );
+    }
+
+    return result;
   },
 
   createUserGraphql: async (data: Tregister) => {
     set({ loadingUser: true, error: null });
-    
-    const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    const { data: { addUser } } = await client.mutate({
+    const { data: response } = await client.mutate({
       mutation: gql`
         mutation AddUser(
           $name: String!, 
@@ -93,11 +156,12 @@ const createUserActions: StateCreator<UserStore> = (set, get) => ({
             timezone: $timezone, 
             password: $password
           ) {
-            email
-            name
-            password
-            role
-            timezone
+            success
+            message
+            user {
+              name
+              email
+            }
           }
         }
       `,
@@ -106,33 +170,41 @@ const createUserActions: StateCreator<UserStore> = (set, get) => ({
         email: data.email,
         role: data.role,
         timezone: data.timezone,
-        password: hashedPassword,
+        password: data.password,
       },
+      fetchPolicy: "no-cache", 
+      // refetchQueries: [{ 
+      //   query: queries.getUsersPagination(get().pagination.page, get().pagination.limit),
+      // }], 
     });
 
-    get().getUsersPaginationGraphql(
-      get().pagination.page, 
-      get().pagination.limit
-    );
+    set({ loadingUser: false });
 
-    console.log(">> addUser", addUser);
+    const { success, message } = response.addUser;
 
-    set({ loadingUser: true });
+    if (success) {
+      get().getUsersPaginationGraphql(
+        get().pagination.page, 
+        get().pagination.limit
+      );
+    }
 
     return {
-      message: 'User created successfully!',
-      success: true,
+      message: message,
+      success: success,
     }
   },
 
   getUsersPaginationGraphql: async (page, limit) => {
     set({ loading: true, error: null });
-
+  
     try {
       const { data } = await client.query({
         query: gql`
           query GetUsersPagination($page: Int!, $limit: Int!) {
             getUsersPagination(page: $page, limit: $limit) {
+              success
+              message
               users {
                 id
                 name
@@ -151,12 +223,16 @@ const createUserActions: StateCreator<UserStore> = (set, get) => ({
           }
         `,
         variables: { page, limit },
+        fetchPolicy: "no-cache", 
       });
 
-      set({
-        loading: false,
+      const { success, message } = data.getUsersPagination;
+
+      set({ 
+        loading: false, 
         users: data.getUsersPagination.users,
         pagination: data.getUsersPagination.pagination,
+        error: success ? null : message,
       });
       
     } catch (error) {
@@ -256,11 +332,10 @@ const createUserActions: StateCreator<UserStore> = (set, get) => ({
   createUser: async (data: Tregister) => {
     set({ loadingUser: true, error: null });
     
-    const hashedPassword = await bcrypt.hash(data.password, 10);
     const response = await fetch('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, password: hashedPassword })
+      body: JSON.stringify({ ...data })
     });
 
     const result = await response.json();
@@ -319,6 +394,10 @@ const createUserActions: StateCreator<UserStore> = (set, get) => ({
 
   setPage: (page: number) => {
     set({ pagination: { ...get().pagination, page } });
+  },
+
+  setPageLimit: (page: number, limit: number) => {
+    set({ pagination: { ...get().pagination, page, limit } });
   }
 
 });

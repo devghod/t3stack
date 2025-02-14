@@ -4,8 +4,12 @@ import { AppShell, Card, Overlay, useMantineTheme } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/authStore';
+import { Notifications } from '@mantine/notifications';
+
 import Navbar from '@/components/dashboard/Navbar';
 import Header from '@/components/dashboard/Header';
+
+import '@mantine/notifications/styles.css';
 
 export default function DashboardLayout({ 
   children 
@@ -102,6 +106,7 @@ export default function DashboardLayout({
           height: `calc(100vh - ${isDesktop ? 60 : 50}px)`,
         }}
       >
+        <Notifications style={{ zIndex: 1000, boxShadow: theme.shadows.md }} />
         {!isDesktop && navbarOpened && (
           <Overlay
             color={theme.colors.gray[5]}

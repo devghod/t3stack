@@ -4,6 +4,7 @@ import { currentUserRole } from "@/hooks/useServerSide";
 import { db } from "@/lib/db";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
+import bcrypt from 'bcryptjs';
 
 export async function GET(request: Request) {
   try {
@@ -60,6 +61,9 @@ export async function POST(request: Request) {
       throw new Error('Email existed!');
     }
 
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    data['password'] = hashedPassword;
+    
     const user = await db.user.create({
       data: { ...data }
     });

@@ -1,4 +1,4 @@
-import { useState, memo, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { useUserStore } from "@/stores/userStore";
 import { TUser } from "@/types/user";
@@ -128,7 +128,7 @@ export default function AccountDrawer({
   );
 }
 
-const DeleteForm = memo(({ 
+const DeleteForm = ({ 
   loadingUser, 
   handleDelete, 
   onClose 
@@ -165,6 +165,6 @@ const DeleteForm = memo(({
       </Grid.Col>
     </Grid>
   </>
-));
+);
 
 DeleteForm.displayName = 'DeleteForm';

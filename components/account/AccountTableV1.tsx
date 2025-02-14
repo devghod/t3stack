@@ -8,7 +8,7 @@ import {
   useMantineReactTable,
   type MRT_ColumnDef,
 } from 'mantine-react-table';
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import defaultProfile from "@/assets/images/default-profile.jpg";
 import '@mantine/core/styles.css';
@@ -47,7 +47,7 @@ import {
   IconTrash,
   IconUserPlus
 } from '@tabler/icons-react';
-import { ModalsProvider, modals } from '@mantine/modals';
+import { modals } from '@mantine/modals';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
 import { DatePickerInput } from '@mantine/dates';
 import { timezones } from '@/constant/timezones';

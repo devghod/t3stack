@@ -49,6 +49,8 @@ import AccountTableModal from '@/components/account/AccountTableModal';
 import classes from './account.module.css';
 import AccountChartByRegisterType from '../statistics/AccountChartByRegisterType';
 import AccountDrawer from './AccountDrawer';
+
+import 'mantine-datatable/styles.layer.css';
 import '@mantine/dates/styles.css';
 
 const csvConfig = mkConfig({
@@ -752,24 +754,6 @@ export default function AccountTable() {
         type={type}
         userId={userId || undefined}
       />
-
-      {/* {(opened && type !== 'delete') && (
-        <AccountDrawer
-          key={type}
-          isOpen={opened}
-          onClose={close}
-          type={type}
-          userId={userId}
-        />
-      )}
-      {(opened && type === 'delete') && (
-        <AccountTableModal
-          opened={opened}
-          onClose={close}
-          type={type}
-          userId={userId || undefined}
-        />
-      )} */}
 
     </>
   )

@@ -3,7 +3,13 @@
 import { usePathname } from "next/navigation";
 import { redirect } from "next/navigation";
 import { Stack, Tooltip } from "@mantine/core";
-import { IconDashboardFilled, IconUserFilled, IconSettingsFilled, IconBrandGraphql } from "@tabler/icons-react";
+import { 
+  IconDashboardFilled, 
+  // IconUserFilled, 
+  IconSettingsFilled, 
+  IconBrandGraphql, 
+  IconColumns 
+} from "@tabler/icons-react";
 import { NavLink } from "@mantine/core";
 
 const navbarItems = [
@@ -13,11 +19,17 @@ const navbarItems = [
     path: "/dashboard",
     color: "var(--mantine-color-blue-filled)"
   },
+  // {
+  //   label: "Accounts",
+  //   Icon: IconUserFilled,
+  //   path: "/accounts",
+  //   color: "var(--mantine-color-green-filled)"
+  // },
   {
-    label: "Accounts",
-    Icon: IconUserFilled,
-    path: "/accounts",
-    color: "var(--mantine-color-green-filled)"
+    label: "Mantine Datatable",
+    Icon: IconColumns,
+    path: "/mantinedatatable",
+    color: "var(--mantine-color-orange-filled)"
   },
   {
     label: "Profile",

@@ -19,17 +19,37 @@ const queries =  {
   ) => { 
     const total = await prisma.user.count(); // Ensure this is not null
     const totalPages = total > 0 ? Math.ceil(total / limit) : 1;
-    const offset = (page - 1) * limit;
+    // const offset = (page - 1) * limit; // starting page is 1
+    const offset = page * limit; // starting page is 0
 
     const users = await prisma.user.findMany({
       skip: offset,
       take: limit,
+      orderBy: {
+        createdAt: 'desc'
+      }
     });
 
+    if (!users) {
+      return {
+        message: `Unsuccessfully collect page ${page}`,
+        success: false,
+        users: [],
+        pagination: {
+          total: total || 0, 
+          totalPages,
+          page: page,
+          limit: limit,
+        }
+      }
+    }
+
     return {
+      message: `Successfully collect page ${page}`,
+      success: true,
       users,
       pagination: {
-        total: total || 0, // Ensure it never returns null
+        total: total || 0, 
         totalPages,
         page: page,
         limit: limit,

@@ -25,6 +25,7 @@ export default function Navbar({
   useEffect(() => {
     router.prefetch("/dashboard");
     router.prefetch("/accounts");
+    router.prefetch("/mantinedatatable");
     router.prefetch("/profile");
   }, [router]);
 

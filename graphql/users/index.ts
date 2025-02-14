@@ -62,8 +62,34 @@ const typeDefs = gql`
   }
 
   type UserPagination {
+    success: Boolean!
+    message: String!
     users: [User]!
     pagination: Pagination!
+  }
+
+  type UserCreationResult {
+    user: User!
+    success: Boolean!
+    message: String!
+  }
+  
+  type UserUpdateResult {
+    user: User!
+    success: Boolean!
+    message: String!
+  }
+
+  type UserDeleteResult {
+    success: Boolean!
+    message: String!
+  }
+
+  input EditUserInput {
+    name: String!, 
+    email: String!, 
+    role: String!, 
+    timezone: String!
   }
 
   type Query {
@@ -79,17 +105,27 @@ const typeDefs = gql`
       role: String!, 
       timezone: String!, 
       password: String!
-    ): User
+    ): UserCreationResult
+    updateUser(id: ID!, edit: EditUserInput!): UserUpdateResult
+    deleteUser(id: ID!): UserDeleteResult
   }
 `;
 
 const resolvers = {
-  Query: {
-    ...queries,
-  },
-  Mutation: {
-    ...mutations,
-  },
+  Query: { ...queries },
+  Mutation: { ...mutations },
+  // plugins: [
+  //   {
+  //     async requestDidStart() {
+  //       console.log("GraphQL request started...");
+  //       return {
+  //         async willSendResponse({ response }: any) { // eslint-disable-line
+  //           console.log("GraphQL response:", response);
+  //         },
+  //       };
+  //     },
+  //   },
+  // ],
 };
 
 export const server = new ApolloServer({ typeDefs, resolvers });

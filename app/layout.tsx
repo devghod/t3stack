@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Montserrat, Montserrat_Alternates } from "next/font/google";
 import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core';
+import { ModalsProvider } from "@mantine/modals";
+
 import Providers from "@/lib/providers";
+
 import '@mantine/core/styles.css';
-// import '@mantine/core/styles.layer.css';
-import 'mantine-datatable/styles.layer.css';
+
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -35,7 +37,9 @@ export default function RootLayout({
       <body className={`${montserrat.variable} ${montserratAlternates.variable}`}>
         <Providers>
           <MantineProvider defaultColorScheme="light">
-            {children}
+            <ModalsProvider>
+              {children}
+            </ModalsProvider>
           </MantineProvider>
         </Providers>
       </body>

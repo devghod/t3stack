@@ -6,7 +6,7 @@ export type TUser = {
   email: string | null;
   emailVerified: Date | null;
   image: string | null;
-  password: string | null;
+  password?: string | null;
   role: UserRole;
   timezone: string | null;
   createdAt: Date;

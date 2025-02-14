@@ -2,24 +2,26 @@ import { Button, Group, Modal, Space, Text, Grid } from "@mantine/core";
 import AccountFormRegister from "./AccountFormRegister";
 import { useUserStore } from "@/stores/userStore";
 import { TUser } from "@/types/user";
-import { memo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { notifications } from '@mantine/notifications';
+
 import AccountFormEdit from "./AccountFormEdit";
 
 type TAccountTableModal = {
   opened: boolean;
-  type: 'edit' | 'delete' | 'register';
+  type: 'edit' | 'delete' | 'register' | null;
   userId?: string;
   onClose: () => void;
 }
 
-export default memo(function AccountTableModal({
+export default function AccountTableModal({
   opened,
   type,
   userId,
   onClose,
 }: TAccountTableModal) {
 
-  const { getUserById, loadingUser, updateUser, deleteUser } = useUserStore();
+  const { getUserById, loadingUser, updateUserGraphql, deleteUserGraphql } = useUserStore();
   
   const initialUserState: TUser = {
     id: '',
@@ -56,7 +58,7 @@ export default memo(function AccountTableModal({
     try {
       if (!userId) return;
 
-      const response = await updateUser(
+      const response = await updateUserGraphql(
         { 
           name: user.name || '', 
           email: user.email || '', 
@@ -64,8 +66,12 @@ export default memo(function AccountTableModal({
           timezone: user.timezone || 'UTC'
         },
         userId
-      ) as unknown as { success: boolean };
-
+      ) as unknown as { success: boolean, message: string };
+      notifications.show({
+        title: response.success ? 'Success' : 'Fail',
+        message: response.message,
+        color: response.success ? 'green' : 'red',
+      });
       if (response?.success) {
         onClose();
       }
@@ -78,7 +84,15 @@ export default memo(function AccountTableModal({
     try {
       if (!userId) return; 
 
-      const response = await deleteUser(userId) as unknown as { success: boolean };
+      const response = await deleteUserGraphql(userId) as unknown as { 
+        success: boolean,
+        message: string
+      };
+      notifications.show({
+        title: response.success ? 'Success' : 'Fail',
+        message: response.message,
+        color: response.success ? 'green' : 'red',
+      });
       if (response?.success) {
         onClose();
       }
@@ -105,7 +119,7 @@ export default memo(function AccountTableModal({
             : 'Register Account'
       }
       centered
-      opened={opened}
+      opened={opened && type != null}
       onClose={onClose}
     >
       {type === 'edit' ? (
@@ -130,9 +144,9 @@ export default memo(function AccountTableModal({
       )}
     </Modal>
   )
-});
+}
 
-const DeleteForm = memo(({ 
+const DeleteForm = ({ 
   loadingUser, 
   handleDelete, 
   onClose 
@@ -169,6 +183,6 @@ const DeleteForm = memo(({
       </Grid.Col>
     </Grid>
   </>
-));
+);
 
 DeleteForm.displayName = 'DeleteForm';

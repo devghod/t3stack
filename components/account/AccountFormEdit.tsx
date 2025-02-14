@@ -1,9 +1,8 @@
 import { timezones } from "@/constant/timezones";
 import { TUser } from "@/types/user";
 import { Group, TextInput, Space, Grid, Button, Select } from "@mantine/core";
-import { memo } from "react";
 
-export default memo(function AccountFormEdit({ 
+export default function AccountFormEdit({ 
   user, 
   loadingUser, 
   handleInputChange, 
@@ -80,4 +79,4 @@ export default memo(function AccountFormEdit({
       </Grid.Col>
     </Grid>
   </>
-)});
+)};

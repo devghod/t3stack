@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 import { IconRefresh, IconAlertCircle } from "@tabler/icons-react";
 import { useUserStore } from "@/stores/userStore";
-import { memo, useEffect, useMemo, useCallback } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import classes from '@/components/statistics/statistics.module.css';
 import '@mantine/charts/styles.css';
 
@@ -155,4 +155,4 @@ function AccountChartByRegisterType() {
   );
 }
 
-export default memo(AccountChartByRegisterType);
+export default AccountChartByRegisterType;

@@ -20,4 +20,3 @@ export const timezones = [
   label: tz.replace('_', ' '),
   value: tz
 }));
-
